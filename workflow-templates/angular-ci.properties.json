@@ -1,0 +1,12 @@
+{
+  "name": "Angular CI",
+  "description": "Build and unit-test an Angular application using Node.js 20 and Karma in headless Chrome mode.",
+  "iconName": "octicon workflow",
+  "categories": [
+    "JavaScript",
+    "TypeScript"
+  ],
+  "filePatterns": [
+    "angular\\.json$"
+  ]
+}

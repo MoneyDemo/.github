@@ -1,0 +1,65 @@
+# Org Workflow Template: Java (Maven) CI
+# ─────────────────────────────────────────────────────────────────────────────
+# Sets up Java 21 (Eclipse Temurin), runs "mvn verify" (build + tests),
+# and uploads the resulting JAR as a workflow artifact.
+#
+# "$default-branch" is replaced with your repo's default branch when you
+# create a workflow from this template.
+
+name: Java (Maven) CI
+
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
+  workflow_dispatch:
+
+# ── Least-privilege permissions ──────────────────────────────────────────────
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Fetch the repository code
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      # 2. Install the JDK and enable Maven's local repository cache.
+      #    "temurin" is the Eclipse Temurin (formerly AdoptOpenJDK) distribution,
+      #    widely used and freely available.
+      #    cache: 'maven' caches ~/.m2/repository between runs.
+      - name: Set up Java 21 (Temurin)
+        uses: actions/setup-java@v6
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      # 3. Run the full Maven default lifecycle up to "verify".
+      #    This compiles, runs unit tests (Surefire), and runs integration tests
+      #    (Failsafe) if configured.
+      #    "-B" (--batch-mode) disables ANSI colours and interactive prompts,
+      #    making the log easier to read in CI.
+      - name: Build and verify
+        run: mvn -B verify
+
+      # 4. Upload the built JAR so it can be downloaded from the workflow run page.
+      #    "if-no-files-found: warn" keeps the run green even if a sub-module
+      #    project produces no top-level JAR.
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: application-jar
+          path: target/*.jar
+          if-no-files-found: warn
+
+      # 5. Append result to the job Summary tab
+      - name: Job summary
+        if: always()
+        run: |
+          echo "## Java (Maven) CI — ${{ job.status }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Branch: \`${{ github.ref_name }}\` | Commit: \`${{ github.sha }}\`" >> "$GITHUB_STEP_SUMMARY"

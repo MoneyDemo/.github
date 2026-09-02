@@ -1,0 +1,58 @@
+# Org Workflow Template: Python CI
+# ─────────────────────────────────────────────────────────────────────────────
+# Sets up Python, installs dependencies, and runs pytest.
+#
+# "$default-branch" is replaced with your repo's default branch when you
+# create a workflow from this template.
+
+name: Python CI
+
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
+  workflow_dispatch:
+
+# ── Least-privilege permissions ──────────────────────────────────────────────
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Fetch the repository code
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      # 2. Install Python and restore the pip download cache.
+      #    The pip cache avoids re-downloading wheels on every run.
+      #    Requires a dependency file (requirements.txt, pyproject.toml, etc.)
+      #    at the repository root; remove "cache: 'pip'" if none is present.
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      # 3. Upgrade pip, then install project dependencies.
+      #    Adjust this step if your project uses pyproject.toml ("pip install .")
+      #    or a Pipfile ("pipenv install --dev").
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # 4. Run the pytest test suite.
+      #    "-v" (verbose) shows individual test names in the CI log.
+      - name: Test with pytest
+        run: python -m pytest -v
+
+      # 5. Append result to the job Summary tab
+      - name: Job summary
+        if: always()
+        run: |
+          echo "## Python CI — ${{ job.status }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Branch: \`${{ github.ref_name }}\` | Commit: \`${{ github.sha }}\`" >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,13 @@
+{
+  "name": "Python CI",
+  "description": "Set up Python 3.12, install requirements.txt dependencies, and run pytest.",
+  "iconName": "octicon code",
+  "categories": [
+    "Python"
+  ],
+  "filePatterns": [
+    "requirements\\.txt$",
+    "setup\\.py$",
+    "pyproject\\.toml$"
+  ]
+}

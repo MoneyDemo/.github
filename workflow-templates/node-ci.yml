@@ -1,0 +1,57 @@
+# Org Workflow Template: Node.js CI
+# ─────────────────────────────────────────────────────────────────────────────
+# Installs dependencies, lints (if a lint script exists), and runs tests
+# for a Node.js backend application.
+#
+# "$default-branch" is replaced with your repo's default branch when you
+# create a workflow from this template.
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
+  workflow_dispatch:
+
+# ── Least-privilege permissions ──────────────────────────────────────────────
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Fetch the repository code
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      # 2. Install Node.js and restore npm package cache
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # 3. Install exact versions from package-lock.json
+      - name: Install dependencies
+        run: npm ci
+
+      # 4. Run the lint script if one is defined in package.json.
+      #    "--if-present" silently skips this step when no "lint" script exists,
+      #    so the workflow works out of the box on projects without a linter.
+      - name: Lint
+        run: npm run lint --if-present
+
+      # 5. Run the test suite (Jest, Mocha, Vitest, etc.)
+      - name: Test
+        run: npm test
+
+      # 6. Append result to the job Summary tab
+      - name: Job summary
+        if: always()
+        run: |
+          echo "## Node.js CI — ${{ job.status }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Branch: \`${{ github.ref_name }}\` | Commit: \`${{ github.sha }}\`" >> "$GITHUB_STEP_SUMMARY"

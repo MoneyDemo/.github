@@ -1,0 +1,12 @@
+{
+  "name": "React CI",
+  "description": "Build and test a React application. Supports Create React App (CI=true) and most Vite/Jest setups.",
+  "iconName": "octicon workflow",
+  "categories": [
+    "JavaScript",
+    "TypeScript"
+  ],
+  "filePatterns": [
+    "package\\.json$"
+  ]
+}

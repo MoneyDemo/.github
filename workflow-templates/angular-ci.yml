@@ -1,0 +1,71 @@
+# Org Workflow Template: Angular CI
+# ─────────────────────────────────────────────────────────────────────────────
+# Builds and unit-tests an Angular application in headless (CI) mode.
+#
+# IMPORTANT FOR STUDENTS:
+#   After you click "Configure" in the Actions tab, GitHub copies this file
+#   into YOUR repo — you own it from that moment on.
+#   "$default-branch" is automatically replaced with your repo's default branch
+#   (e.g. "main") at copy time.
+
+name: Angular CI
+
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
+  # Allow a one-click manual run from the Actions tab (useful for demos/debugging)
+  workflow_dispatch:
+
+# ── Least-privilege permissions ──────────────────────────────────────────────
+# Declare the minimum GITHUB_TOKEN permissions this workflow actually uses.
+# "contents: read" lets the runner check out code — nothing else is granted.
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Fetch the repository at the exact commit that triggered this run
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      # 2. Install Node.js and activate the built-in npm package cache.
+      #    Caching avoids re-downloading node_modules on every run.
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '20'
+          cache: 'npm'    # built-in npm cache; no extra actions/cache step needed
+
+      # 3. Install exact versions pinned in package-lock.json.
+      #    "npm ci" is preferred over "npm install" in CI because it is:
+      #      - faster (skips dependency resolution)
+      #      - deterministic (fails if package-lock.json is out of sync)
+      - name: Install dependencies
+        run: npm ci
+
+      # 4. Compile the Angular application for production
+      - name: Build
+        run: npm run build
+
+      # 5. Run Karma unit tests in headless Chrome (no display server needed).
+      #    Flags passed after "--" are forwarded to "ng test":
+      #      --watch=false  : run tests once, then exit (default: watch forever)
+      #      --no-progress  : suppress noisy progress lines in the CI log
+      #      --browsers     : use Chrome without a visible window
+      #    Note: if your karma.conf.js defines ChromeHeadlessNoSandbox, use that
+      #    instead of ChromeHeadless.
+      - name: Test
+        run: npm test -- --watch=false --no-progress --browsers=ChromeHeadless
+
+      # 6. Append a one-line result to the job Summary tab in the Actions UI.
+      #    "if: always()" ensures the summary is written even when a step fails.
+      - name: Job summary
+        if: always()
+        run: |
+          echo "## Angular CI — ${{ job.status }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Branch: \`${{ github.ref_name }}\` | Commit: \`${{ github.sha }}\`" >> "$GITHUB_STEP_SUMMARY"

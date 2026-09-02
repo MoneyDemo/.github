@@ -1,0 +1,59 @@
+# Org Workflow Template: React CI
+# ─────────────────────────────────────────────────────────────────────────────
+# Builds and tests a React application.
+# Compatible with Create React App (CRA) and most Vite/Jest setups.
+#
+# "$default-branch" is replaced with your repo's default branch when you
+# create a workflow from this template.
+
+name: React CI
+
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
+  workflow_dispatch:
+
+# ── Least-privilege permissions ──────────────────────────────────────────────
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Fetch the repository code
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      # 2. Install Node.js and restore npm package cache
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # 3. Install exact versions from package-lock.json
+      - name: Install dependencies
+        run: npm ci
+
+      # 4. Compile the React application (output goes to build/ or dist/)
+      - name: Build
+        run: npm run build
+
+      # 5. Run tests with CI=true.
+      #    Create React App: CI=true makes Jest run once and exit (non-interactive).
+      #    Vite/Vitest projects: run "npm test -- --run" instead and remove CI=true.
+      - name: Test
+        env:
+          CI: 'true'
+        run: npm test
+
+      # 6. Append result to the job Summary tab
+      - name: Job summary
+        if: always()
+        run: |
+          echo "## React CI — ${{ job.status }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Branch: \`${{ github.ref_name }}\` | Commit: \`${{ github.sha }}\`" >> "$GITHUB_STEP_SUMMARY"

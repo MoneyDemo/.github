@@ -1,0 +1,11 @@
+{
+  "name": "Java (Maven) CI",
+  "description": "Build and test a Java application with Maven and Java 21 (Temurin). Uploads the built JAR as a workflow artifact.",
+  "iconName": "octicon cpu",
+  "categories": [
+    "Java"
+  ],
+  "filePatterns": [
+    "pom\\.xml$"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "Node.js CI",
+  "description": "Install dependencies, lint (if configured), and run tests for a Node.js backend application.",
+  "iconName": "octicon server",
+  "categories": [
+    "JavaScript"
+  ],
+  "filePatterns": [
+    "package\\.json$"
+  ]
+}

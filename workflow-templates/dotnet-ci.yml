@@ -1,0 +1,58 @@
+# Org Workflow Template: .NET CI
+# ─────────────────────────────────────────────────────────────────────────────
+# Restores NuGet packages, builds, and runs tests for a .NET application.
+#
+# "$default-branch" is replaced with your repo's default branch when you
+# create a workflow from this template.
+
+name: .NET CI
+
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
+  workflow_dispatch:
+
+# ── Least-privilege permissions ──────────────────────────────────────────────
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Fetch the repository code
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      # 2. Install the .NET SDK.
+      #    "x" in the patch position means "latest available patch" for the
+      #    specified major.minor, keeping the build on the most recent bugfix.
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '8.0.x'
+
+      # 3. Restore NuGet packages declared in *.csproj / *.sln
+      - name: Restore dependencies
+        run: dotnet restore
+
+      # 4. Build the solution in Release configuration.
+      #    "--no-restore" skips a redundant restore since we did it in step 3.
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      # 5. Run all xUnit / NUnit / MSTest test projects.
+      #    "--no-build" skips a redundant compile.
+      #    "--verbosity normal" shows each test name in the CI log.
+      - name: Test
+        run: dotnet test --no-build --configuration Release --verbosity normal
+
+      # 6. Append result to the job Summary tab
+      - name: Job summary
+        if: always()
+        run: |
+          echo "## .NET CI — ${{ job.status }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Branch: \`${{ github.ref_name }}\` | Commit: \`${{ github.sha }}\`" >> "$GITHUB_STEP_SUMMARY"

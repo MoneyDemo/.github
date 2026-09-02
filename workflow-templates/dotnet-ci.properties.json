@@ -1,0 +1,12 @@
+{
+  "name": ".NET CI",
+  "description": "Restore NuGet packages, build in Release configuration, and run all .NET test projects.",
+  "iconName": "octicon tools",
+  "categories": [
+    "C#"
+  ],
+  "filePatterns": [
+    ".*\\.csproj$",
+    ".*\\.sln$"
+  ]
+}
