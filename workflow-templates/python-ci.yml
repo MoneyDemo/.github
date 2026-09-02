@@ -27,15 +27,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
-      # 2. Install Python and restore the pip download cache.
-      #    The pip cache avoids re-downloading wheels on every run.
-      #    Requires a dependency file (requirements.txt, pyproject.toml, etc.)
-      #    at the repository root; remove "cache: 'pip'" if none is present.
+      # 2. Install the Python runtime used by the project.
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
           python-version: '3.12'
-          cache: 'pip'
 
       # 3. Upgrade pip, then install project dependencies.
       #    Adjust this step if your project uses pyproject.toml ("pip install .")

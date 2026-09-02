@@ -33,13 +33,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
-      # 2. Install Node.js and activate the built-in npm package cache.
-      #    Caching avoids re-downloading node_modules on every run.
+      # 2. Install the Node.js runtime used by the project.
       - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
           node-version: '20'
-          cache: 'npm'    # built-in npm cache; no extra actions/cache step needed
 
       # 3. Install exact versions pinned in package-lock.json.
       #    "npm ci" is preferred over "npm install" in CI because it is:

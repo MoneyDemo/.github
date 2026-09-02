@@ -28,16 +28,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
-      # 2. Install the JDK and enable Maven's local repository cache.
-      #    "temurin" is the Eclipse Temurin (formerly AdoptOpenJDK) distribution,
-      #    widely used and freely available.
-      #    cache: 'maven' caches ~/.m2/repository between runs.
+      # 2. Install Java 21 using the Eclipse Temurin distribution.
       - name: Set up Java 21 (Temurin)
         uses: actions/setup-java@v6
         with:
           java-version: '21'
           distribution: 'temurin'
-          cache: 'maven'
 
       # 3. Run the full Maven default lifecycle up to "verify".
       #    This compiles, runs unit tests (Surefire), and runs integration tests

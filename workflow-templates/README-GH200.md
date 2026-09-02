@@ -61,26 +61,13 @@ MoneyDemo/
 
 ---
 
-## 四、與其他複用機制的差異
+## 四、本次教學邊界
 
-這是講師常被學員問到的問題，請務必釐清：
+本場只教 **Workflow Template**：GitHub 將範本複製到目標 repository 的
+`.github/workflows/`，之後由該 repository 自行維護；組織更新原始範本不會自動修改
+已複製的檔案。
 
-| 機制 | 核心概念 | 複用方式 | 維護模式 |
-|------|---------|----------|---------|
-| **Workflow Template**（本次） | 範本 → 套用後複製 | 各 repo 持有獨立一份 `.yml` | 各自維護，互不影響 |
-| **Reusable Workflow** | 中央工作流程 → 持續呼叫 | `uses: org/.github/.github/workflows/reuse.yml@main` | 集中維護，更新立即生效 |
-| **Composite Action** | 封裝多個步驟為單一 `uses:` | `uses: org/my-action@v1` | 集中維護，版本號控制 |
-
-### 關鍵差異（講師要點）
-
-**Workflow Template 是「一次性複製」：**  
-套用後，`.yml` 就屬於學員自己的 repository。日後組織管理員若更新原始範本，**已套用的 repository 不會自動跟進**。範本只是一個起點（starting point）。
-
-**Reusable Workflow 是「持續連結」（central link）：**  
-呼叫方每次執行都會從來源 repository 讀取最新的 workflow 定義。適合需要組織統一強制執行的政策流程（例如：所有 repo 都必須跑同一份安全掃描）。
-
-> ⚠️ **本次課程（GH-200）的 M2 範圍只教 Workflow Templates，不教 Reusable Workflows。**  
-> 此說明僅供講師在學員提問時解釋差異。Reusable Workflows 與 Composite Actions 屬於進階主題，非本次交付範圍。
+依客戶要求，其他 workflow/action 複用機制不在本次交付範圍，講師不要在這一節延伸。
 
 ---
 
